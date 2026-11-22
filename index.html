@@ -1389,8 +1389,15 @@ $('chSel').innerHTML='<option value="">كل الدروس · All lessons</option>
 $('chSel').onchange=()=>{const v=$('chSel').value;CFG.c=v;if(v!==''){cat=+v;load(list()[0])}else render();send('__chapter__',0,v===''?'all':v)};
 $('grSw').innerHTML=GROUPS.map(g=>g[0]).concat(NOG).map(n=>`<option>${n}</option>`.replace('<option>','<option value="'+n+'">')).join('');
 $('grSw').onchange=()=>{const S=SESS;if(!S||S.r!='coach')return;S.g=$('grSw').value;svS(S);VIEW={};CINIT=0;PUBP=-1;$('who').textContent='مدرب: '+S.n+' · '+S.g;startSync();cpanel()};
-$('shB').onclick=()=>{const S=SESS,url=location.href.split('#')[0],t='أهلًا 👋\nده رابط تمارين Tactics 101 — Breakthrough Chess Academy:\n'+url+'\n\nمن صفحة الدخول اختر «متدرب»'+(S&&S.g!=NOG?'، واختر جروب: '+S.g+'\nوالكود هيديهولك المدرب، واكتب اسمك وادخل.':'، واختر جروبك واكتب اسمك وكود الجروب.');
-  if(navigator.share)navigator.share({text:t}).catch(()=>{});else{try{navigator.clipboard.writeText(t)}catch(e){}window.open('https://wa.me/?text='+encodeURIComponent(t))}};
+$('shB').onclick=async()=>{const S=SESS,base=location.href.split('#')[0].split('?')[0];let url=base,code='';
+  const G=S&&S.g!=NOG?GROUPS.find(x=>x[0]==S.g):null;
+  if(G){const ok=async c=>{const h=await sha(c);return h===G[1]||h===G[2]};let c='';try{c=localStorage['gcode:'+G[0]]||''}catch(e){}
+   if(!c||!(await ok(c))){c=prompt('اكتب كود جروب «'+G[0]+'» عشان يتبعت جوه الرابط (اتركه فاضي لو مش عايز تبعت الكود):','');if(c===null)return;c=c.trim();
+    if(c&&!(await ok(c))){alert('الكود ده مش صحيح للجروب ده.');return}try{if(c)localStorage['gcode:'+G[0]]=c}catch(e){}}
+   code=c;url=base+'#g='+encodeURIComponent(G[0])+(c?'&k='+encodeURIComponent(c):'')}
+  const t='أهلًا 👋\nده رابط تمارين Tactics 101 — Breakthrough Chess Academy:\n'+url+'\n\n'+(G?'الجروب: '+G[0]+(code?'\nالكود: '+code+'\n\nافتح الرابط واكتب اسمك بس واضغط دخول.':'\nالكود هيديهولك المدرب.'):'من صفحة الدخول اختر «متدرب»، واختر جروبك واكتب اسمك وكود الجروب.');
+  const wa='https://wa.me/?text='+encodeURIComponent(t);try{navigator.clipboard&&navigator.clipboard.writeText(t).catch(()=>{})}catch(e){}
+  const w=window.open(wa,'_blank');if(!w)location.href=wa};
 /* login */
 const norm=x=>String(x==null?'':x).replace(/[\u0660-\u0669]/g,d=>d.charCodeAt(0)-1632).replace(/[\u06F0-\u06F9]/g,d=>d.charCodeAt(0)-1776).trim();
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(norm(x).toLowerCase())))].map(v=>v.toString(16).padStart(2,'0')).join('');
@@ -1412,6 +1419,10 @@ $('go').onclick=async()=>{const E=m=>{$('er').textContent=m};let S;
   else{const k=$('sg').value,nm=$('sn').value.replace(/\s+/g,' ').trim();if(k==='')return E('اختر الجروب أولًا');if(nm.length<2)return E('اكتب اسم المتدرب');
    if(k=='-1')S={r:'student',n:nm,g:NOG};else{const h=await sha($('sp').value),G=GROUPS[+k];if(h!==G[1]&&h!==G[2]){$('sp').value='';return E('كود دخول الجروب غير صحيح')}S={r:'student',n:nm,g:G[0]}}}
   E('');$('cp').value=$('sp').value='';svS(S);enter(S)};
+(()=>{const h=new URLSearchParams(location.hash.slice(1)),g=h.get('g');if(!g)return;const k=GROUPS.findIndex(x=>x[0]==g);if(k<0)return;
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+  setRole(1);$('sg').value=String(k);$('sg').onchange();const c=h.get('k');if(c)$('sp').value=c;
+  setTimeout(()=>{try{$('sn').focus()}catch(e){}},50)})();
 $('lo').onclick=()=>{doSave();if(SESS&&SESS.r=='student')send('__seen__'+SESS.n,0,'0');tms.forEach(clearInterval);tms=[];SESS=null;try{sessionStorage.removeItem(SK);localStorage.removeItem(SK)}catch(e){}
   clearP();USER=null;CFG={c:'',p:0,l:true};document.body.classList.remove('slock');document.body.classList.remove('is-coach');$('ct').hidden=true;$('rep').hidden=true;$('liveB').textContent='';$('lg').hidden=false;$('cp').value=$('sp').value=$('sn').value='';$('er').textContent='';load(0)};
 load(0);
