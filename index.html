@@ -1315,7 +1315,7 @@ $('apv').onclick=()=>{const id=DATA[cur][1];if(hist.length!=1||!last){setSt('ا�
   const k=sqn(last[0])+sqn(last[1])+(B[last[1]]&&B[last[1]].toUpperCase()!=hist[0][0][last[0]].toUpperCase()?B[last[1]].toLowerCase():''),S1=SOL[id],c=CS[id]||(CS[id]={n:0,moves:S1&&S1[0]=='m'?S1[3].slice():[]}),m=DATA[cur][3].match(/FIND (\d+) /);if(!c.moves.includes(k))c.moves.push(k);c.n=Math.min(c.moves.length,m?+m[1]:1);
   sv('cs',JSON.stringify(CS));applyCS();[B,last,turn,EP,EPS,CR]=hist.pop();setSt('✅ اتحفظ الحل ('+c.moves.length+') — محفوظ على الجهاز ده؛ صدّره وشاركه عشان يوصل لأجهزة تانية','good');sel=null;render()};
 /* ===== groups · session · sheet sync · coach panel ===== */
-const SHEET_URL="https://script.google.com/macros/s/AKfycbwl56x7gpsoBoLQKPPknjGVssm3g5e05702xvfuygoY-6iN0_bmik-OgRkehKEtlir8/exec",SHEET_SECRET="",SYNC_SUFFIX=" | T101",COACH_GROUP="",NOG="بدون جروب",SK="tsess";
+const SHEET_URL="https://script.google.com/macros/s/AKfycbyhllWJ79nPRrM3-sVgzt6FCRuq9a6xGP_SOMfa7jnK2h4P0C2WkTktC_etwNYUVpPj/exec",SHEET_SECRET="",SYNC_SUFFIX=" | T101",COACH_GROUP="",NOG="بدون جروب",SK="tsess";
 let SESS=null,ONL=false,VIEW={},SQ=[],sBusy=false,SENT={},CFG={c:'',p:0,l:true},CINIT=0,PUBP=-1,pt,PB=0,tms=[],role=0;
 const IX={};DATA.forEach((d,k)=>IX[d[1]]=k+1);
 const live=()=>!!SESS&&SESS.g!==NOG&&!!SHEET_URL,gk=g=>g+SYNC_SUFFIX,isOn=t=>t>0&&Date.now()-t<110000;
